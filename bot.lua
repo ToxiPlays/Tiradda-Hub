@@ -184,4 +184,4 @@ client:on('ready', function()
 end)
 
 
-client:run('Bot NTMyMDk0MDkzODIwNDI4Mjk4.DxXheA.IvAZbI3HRcWpcs2xHfCH9amCj-Q')
+client:run('Bot TOKEN')
