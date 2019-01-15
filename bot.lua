@@ -4,7 +4,9 @@ local enums = discordia.enums
 
 local admins = {
 	"ToxiPlays#9278",
-	"BowtieBaller302#7742"
+	"BowtieBaller302#7742",
+	"Bright Lightning#6416",
+	"Bright Lightning#0001"
 }
 
 local HelpMessage = [[
