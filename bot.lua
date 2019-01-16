@@ -33,6 +33,10 @@ function CheckForCommands(message, arguments)
 	if arguments[1] == 'h>ping' then
 		message.channel:send('Pong!')
 	elseif arguments[1] == 'h>say' then
+		if message.mentionsEveryone then
+			message.channel:send('Sorry, but I am specifically programmed to NOT repeat messages from people that ping everyone, or ping here. Please try another message.')
+			return
+		end
 		local allowedToRun = admins[message.author.tag]
 		if allowedToRun then
 			if arguments[2] == 'true' then
