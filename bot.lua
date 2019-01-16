@@ -165,7 +165,7 @@ function CheckForCommands(message, arguments)
 			message.channel:send {
 									  embed = {
 										title = "Uploaded!",
-										description = "Your level ID is "..tostring(#PublicLevels+1).."\n**Name**: "..name.."\n**Status**: Verified",
+										description = "Your level ID is "..tostring(#PublicLevels+1).."\n**Name**: "..name.."\n**Difficulty**: "..level["Difficulty"],
 										color = discordia.Color.fromRGB(255, 255, 0).value,
 										timestamp = discordia.Date():toISO('T', 'Z')
 									  }
@@ -173,7 +173,8 @@ function CheckForCommands(message, arguments)
 			PublicLevels[#PublicLevels+1] = {
 				["Creator"] = message.author.username,
 				["Name"] = name,
-				["Difficulty"] = level["Difficulty"]
+				["Difficulty"] = level["Difficulty"],
+				["Stars"] = 0
 			}
 			
 			table.remove(CreatorLevels,tonumber(arguments[2]))
