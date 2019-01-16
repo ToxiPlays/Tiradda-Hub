@@ -165,7 +165,7 @@ function CheckForCommands(message, arguments)
 			message.channel:send {
 									  embed = {
 										title = "Uploaded!",
-										description = "Your level ID is "..PublicLevels[#PublicLevels+1].."\n**Name**: "..name.."\n**Status**: Verified",
+										description = "Your level ID is "..#PublicLevels+1.."\n**Name**: "..name.."\n**Status**: Verified",
 										color = discordia.Color.fromRGB(255, 255, 0).value,
 										timestamp = discordia.Date():toISO('T', 'Z')
 									  }
@@ -176,7 +176,7 @@ function CheckForCommands(message, arguments)
 				["Difficulty"] = level["Difficulty"]
 			}
 			
-			table.remove(CreatorLevels,arguments[2])
+			table.remove(CreatorLevels,tonumber(arguments[2]))
 		else
 			message.channel:send('You gave an invaild ID.')
 		end
