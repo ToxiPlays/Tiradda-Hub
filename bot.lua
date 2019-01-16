@@ -165,11 +165,8 @@ function CheckForCommands(message, arguments)
 			message.channel:send {
 									  embed = {
 										title = "Uploaded!",
-										description = [[
-											Your level ID is ]]..PublicLevels[#PublicLevels+1]..[[
-											**Name**: ]]..name..[[
-											**Status**: Verified]],
-										color = discordia.Color.fromRGB(255, 0, 0).value,
+										description = "Your level ID is "..PublicLevels[#PublicLevels+1].."\n**Name**: "..name.."\n**Status**: Verified",
+										color = discordia.Color.fromRGB(255, 255, 0).value,
 										timestamp = discordia.Date():toISO('T', 'Z')
 									  }
 									}
