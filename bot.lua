@@ -3,10 +3,10 @@ local client = discordia.Client()
 local enums = discordia.enums
 
 local admins = {
-	"ToxiPlays#9278",
-	"BowtieBaller302#7742",
-	"Bright Lightning#6416",
-	"Bright Lightning#0001"
+	["ToxiPlays#9278"] = true,
+	["BowtieBaller302#7742"] = true,
+	["Bright Lightning#6416"] = true,
+	["Bright Lightning#0001"] = true
 }
 
 local HelpMessage = [[
@@ -32,6 +32,24 @@ local CreatorLevels = {}
 function CheckForCommands(message, arguments)
 	if arguments[1] == 'h>ping' then
 		message.channel:send('Pong!')
+	elseif arguments[1] == 'h>say' then
+		local allowedToRun = admins[message.author.tag]
+		if allowedToRun then
+			if arguments[2] == 'true' then
+				message:delete()
+			end
+			local name = ""
+			for i=1,#arguments do
+				if i ~= 1 then
+					if i ~= 2 then
+						name = name..arguments[i]
+					end
+				end
+			end
+			message.channel.send(name)
+		else
+			message.channel.send('Only bot developers are allowed to run this command!')
+		end
 	elseif arguments[1] == 'h>help' then
 		message.channel:send('You need to give me permissions to slide in your DMs, **'..message.author.username..'**! I\'ve sent the info there.')
 		message.author:send(HelpMessage)
