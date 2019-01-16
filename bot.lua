@@ -46,13 +46,13 @@ function CheckForCommands(message, arguments)
 			for i=1,#arguments do
 				if i ~= 1 then
 					if i ~= 2 then
-						name = name..arguments[i]
+						name = name..arguments[i].." "
 					end
 				end
 			end
-			message.channel.send(name)
+			message.channel:send(name)
 		else
-			message.channel.send('Only bot developers are allowed to run this command!')
+			message.channel:send('Only bot developers are allowed to run this command!')
 		end
 	elseif arguments[1] == 'h>help' then
 		message.channel:send('You need to give me permissions to slide in your DMs, **'..message.author.username..'**! I\'ve sent the info there.')
@@ -60,7 +60,7 @@ function CheckForCommands(message, arguments)
 	elseif arguments[1] == 'h>support' then
 		message.channel:send('You need to give me permissions to slide in your DMs, **'..message.author.username..'**! I\'ve sent the info there.')
 		message.author:send('Someone on your account has asked for the support Discord server invite. Here it is.')
-		message.author:send('**SORRY!** The support server is under development.')
+		message.author:send('https://discord.gg/jqAC2CE')
 	elseif arguments[1] == 'h>createlvl' then
 		local difficulty = difficulties[string.lower(arguments[2])]
 		if difficulty then
@@ -158,7 +158,7 @@ function CheckForCommands(message, arguments)
 			for i=1,#arguments do
 				if i ~= 1 then
 					if i ~= 2 then
-						name = name..arguments[i]
+						name = name..arguments[i].." "
 					end
 				end
 			end
