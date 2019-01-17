@@ -6,7 +6,7 @@
 [diff]: https://github.com/CryfryDoesGaming/Tiradda-Hub/wiki/Difficulties
 
 # Tiradda's Hub
-![](https://img.shields.io/github/issues/CryfryDoesGaming/Tiradda-Hub.svg) ![](https://img.shields.io/github/forks/CryfryDoesGaming/Tiradda-Hub.svg) ![](https://img.shields.io/github/stars/CryfryDoesGaming/Tiradda-Hub.svg) ![](https://img.shields.io/github/license/CryfryDoesGaming/Tiradda-Hub.svg)\
+![](https://img.shields.io/github/issues/CryfryDoesGaming/Tiradda-Hub.svg) ![](https://img.shields.io/github/forks/CryfryDoesGaming/Tiradda-Hub.svg) ![](https://img.shields.io/github/stars/CryfryDoesGaming/Tiradda-Hub.svg) ![](https://img.shields.io/github/license/CryfryDoesGaming/Tiradda-Hub.svg) ![](https://img.shields.io/badge/Made%20with-Lua-1f425f.svg) [![GitHub release](https://img.shields.io/github/release/CryfryDoesGaming/Tiradda-Hub.svg)](https://GitHub.com/CryfryDoesGaming/Tiradda-Hub/releases/)\
 **Tiradda's Hub** is a game bot that will instantly set up upon inviting it to a Discord server.
 
 ## Hotlinks
