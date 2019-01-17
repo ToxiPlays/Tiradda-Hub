@@ -3,10 +3,10 @@ local client = discordia.Client()
 local enums = discordia.enums
 
 local admins = {
-	["ToxiPlays#9278"] = true,
-	["BowtieBaller302#7742"] = true,
-	["Bright Lightning#6416"] = true,
-	["Bright Lightning#0001"] = true
+	["259935350653321216"] = true,
+	["312435711192334336"] = true,
+	["368595168523321346"] = true,
+	["521025553562730506"] = true
 }
 
 local HelpMessage = [[
