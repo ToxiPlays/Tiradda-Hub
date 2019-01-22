@@ -15,6 +15,17 @@
 [Pull Requests][pr]\
 [Documentation][wiki]
 
+> **Table of contents**
+> 
+> * [Tiradda's Hub](#tiraddas-hub)
+>   * [Hotlinks](#hotlinks)
+>   * [How to Setup](#how-to-setup)
+>   * [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
+>     - [❓ The bot won't go online!](#question-the-bot-wont-go-online)
+>     - [❓ The bot suddenly won't respond to my commands! What happened?](#question-the-bot-suddenly-wont-respond-to-my-commands-what-happened)
+>     - [❓ When I try to make a level, the bot responds with "That's not a vaild difficulty! See h>help for a list of vaild difficulties."](#question-when-i-try-to-make-a-level-the-bot-responds-with-thats-not-a-vaild-difficulty-see-hhelp-for-a-list-of-vaild-difficulties)
+>     - [❓ All of the bot's user's levels have been erased! What happened?](#question-all-of-the-bots-users-levels-have-been-erased-what-happened)
+
 ## How to Setup
 This bot runs on Discordia / Luvit and is bundled with it. If you find an error with downloading the entire code and running it via Luvit, download only the `bot.lua` file and see [Installing Discordia][discordia-install] by SinisterRectus.
 
