@@ -28,16 +28,28 @@ local difficulties = {
 local PublicLevels = {}
 local CreatorLevels = {}
 
+function fetchUserID(user)
+	-- This works by noticing that by mentioning someone, you send "<@USER ID>" into a Discord channel.
+	-- This function simply cuts off the <@ and > part of the mention to give you the User ID of the Discord user.
+	local mentionString = user.mentionString
+	local ID = string.sub(mentionString,3,string.len(mentionString)-1)
+	
+	if ID then
+		return ID
+	else
+		return nil
+	end
+end
 
 function CheckForCommands(message, arguments)
 	if arguments[1] == 'h>ping' then
-		message.channel:send('Pong!')
+		message.channel:send('🏓 Pong!')
 	elseif arguments[1] == 'h>say' then
 		if message.mentionsEveryone then
 			message.channel:send('Sorry, but I am specifically programmed to NOT repeat messages from people that ping everyone, or ping here. Please try another message.')
 			return
 		end
-		local allowedToRun = admins[message.author.tag]
+		local allowedToRun = admins[tostring(fetchUserID(message.author))]
 		if allowedToRun then
 			if arguments[2] == 'true' then
 				message:delete()
@@ -55,10 +67,14 @@ function CheckForCommands(message, arguments)
 			message.channel:send('Only bot developers are allowed to run this command!')
 		end
 	elseif arguments[1] == 'h>help' then
-		message.channel:send('You need to give me permissions to slide in your DMs, **'..message.author.username..'**! I\'ve sent the info there.')
+		message.channel:send('I\'ve been informed you have mail, **'..message.author.username..'**.')
 		message.author:send(HelpMessage)
+	elseif arguments[1] == 'h>invite' then
+		message.channel:send('I\'ve been informed you have mail, **'..message.author.username..'**.')
+		message.author:send('Someone on your account has asked for a link to add Tiradda\'s Hub to your server. Here it is.')
+		message.author:send('https://discordapp.com/api/oauth2/authorize?client_id=532094093820428298&permissions=0&scope=bot')
 	elseif arguments[1] == 'h>support' then
-		message.channel:send('You need to give me permissions to slide in your DMs, **'..message.author.username..'**! I\'ve sent the info there.')
+		message.channel:send('I\'ve been informed you have mail, **'..message.author.username..'**.')
 		message.author:send('Someone on your account has asked for the support Discord server invite. Here it is.')
 		message.author:send('https://discord.gg/jqAC2CE')
 	elseif arguments[1] == 'h>createlvl' then
