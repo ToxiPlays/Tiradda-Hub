@@ -181,7 +181,7 @@ function CheckForCommands(message, arguments)
 			message.channel:send {
 									  embed = {
 										title = "Uploaded!",
-										description = "Your level ID is "..tostring(#PublicLevels+1).."\n**Name**: "..name.."\n**Difficulty**: "..level["Difficulty"],
+										description = "Your level ID is "..tostring(#PublicLevels+1).."\n**Name**: "..name.."\n**Chance of Failure**: "..level["Difficulty"].."%",
 										color = discordia.Color.fromRGB(255, 255, 0).value,
 										timestamp = discordia.Date():toISO('T', 'Z')
 									  }
@@ -218,7 +218,10 @@ end)
 client:on('ready', function()
 	-- client.user is the path for your bot
 	print('Logged in as '.. client.user.username)
-	client:setGame('h>help')
+	client:setGame{
+		["name"] = tostring(#client.guilds..' servers | h>help'),
+		["type"] = 2
+	}
 end)
 
 
