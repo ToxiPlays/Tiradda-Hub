@@ -53,7 +53,9 @@ function CheckForCommands(message, arguments)
 										title = level["Name"],
 										description = "**Created by**: "..level["Creator"].."\n**Chance of Beating**: "..level["Difficulty"].."%\nBeating this level will give you **"..level["Stars"].."** stars!",
 										color = discordia.Color.fromRGB(255, 255, 0).value,
-										footer = "Created on ",
+										footer = {
+											text = "Created on "
+										},
 										timestamp = level["Timestamp"]
 									  }
 									}
