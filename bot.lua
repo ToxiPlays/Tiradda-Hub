@@ -44,6 +44,32 @@ end
 function CheckForCommands(message, arguments)
 	if arguments[1] == 'h>ping' then
 		message.channel:send('🏓 Pong!')
+	elseif arguments[1] == 'h>search' then
+		local index = tonumber(arguments[2])
+		local level = PublicLevels[index]
+		if level then
+			message.channel:send {
+									  embed = {
+										title = level["Name"],
+										description = "**Created by**: "..level["Creator"].."\n**Chance of Beating**: "..level["Difficulty"].."%\nBeating this level will give you **"..level["Stars"].."** stars!",
+										color = discordia.Color.fromRGB(255, 255, 0).value,
+										footer = "Created on "
+										timestamp = level["Timestamp"]
+									  }
+									}
+		else
+			message.channel:send {
+									  embed = {
+										title = "Error",
+										fields = {
+										  {name = "What Happened?", value = "Level Not Found", inline = true},
+										  {name = "Fix", value = "Make sure that the level is uploaded, and that you typed the right ID (PublicLevelID, not LevelID)", inline = true},
+										},
+										color = discordia.Color.fromRGB(255, 0, 0).value,
+										timestamp = discordia.Date():toISO('T', 'Z')
+									  }
+									}
+		end
 	elseif arguments[1] == 'h>say' then
 		if message.mentionsEveryone then
 			message.channel:send('Sorry, but I am specifically programmed to NOT repeat messages from people that ping everyone, or ping here. Please try another message.')
@@ -77,18 +103,6 @@ function CheckForCommands(message, arguments)
 		message.channel:send('I\'ve been informed you have mail, **'..message.author.username..'**.')
 		message.author:send('Someone on your account has asked for the support Discord server invite. Here it is.')
 		message.author:send('https://discord.gg/jqAC2CE')
-	elseif arguments[1] == 'h>createlvl' then
-		local difficulty = difficulties[string.lower(arguments[2])]
-		if difficulty then
-			message.channel:send('Level successfully created! Your level ID: `'..tostring(#CreatorLevels+1)..'`')
-			CreatorLevels[#CreatorLevels+1] = {
-				["Creator"] = message.author.username,
-				["Difficulty"] = difficulty,
-				["Status"] = "Pending"
-			}
-		else
-			message.channel:send('That\'s not a vaild difficulty! See `h>help` for a list of vaild difficulties.')
-		end
 	elseif arguments[1] == 'h>verify' then
 		local level = CreatorLevels[tonumber(arguments[2])]
 		if level ~= nil then
@@ -190,7 +204,8 @@ function CheckForCommands(message, arguments)
 				["Creator"] = message.author.username,
 				["Name"] = name,
 				["Difficulty"] = level["Difficulty"],
-				["Stars"] = 0
+				["Stars"] = 0,
+				["Timestamp"] = discordia.Date():toISO('T', 'Z')
 			}
 			
 			table.remove(CreatorLevels,tonumber(arguments[2]))
