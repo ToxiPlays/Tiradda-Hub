@@ -44,6 +44,15 @@ end
 function CheckForCommands(message, arguments)
 	if arguments[1] == 'h>ping' then
 		message.channel:send('🏓 Pong!')
+	elseif arguments[1] == 'h>credit' then
+		message.channel:send {
+									  embed = {
+										title = "Thank you to these many people.",
+										description = "Your contributions to the bot have not gone unnoticed.\nToxiPlays#9278 - Bot Owner\nBright Lightning#6416 (and #9532) - Bot Developer",
+										color = discordia.Color.fromRGB(0, 255, 0).value,
+										timestamp = discordia.Date():toISO('T', 'Z')
+									  }
+									}
 	elseif arguments[1] == 'h>search' then
 		local index = tonumber(arguments[2])
 		local level = PublicLevels[index]
