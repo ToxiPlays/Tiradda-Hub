@@ -1,3 +1,5 @@
+pcall(os.remove, 'discordia.log')
+pcall(os.remove, 'gateway.json')
 local discordia = require('discordia')
 local client = discordia.Client()
 local enums = discordia.enums
@@ -42,13 +44,35 @@ function fetchUserID(user)
 end
 
 function CheckForCommands(message, arguments)
-	if arguments[1] == 'h>ping' then
-		message.channel:send('🏓 Pong!')
+	if arguments[1] == 'h>ping' then -- help command buffed by [FuZion] Sexy Cow#0018
+		local x = os.clock()
+		local s = 0
+		for i=1,100000 do 
+			s = s + i 
+		end
+		local ccolor = discordia.Color(math.random(255), math.random(255), math.random(255)).value
+		local embedmessage = message.channel:send{
+  			embed = {
+    			title = "Ping...",
+    			color = discordia.Color.fromRGB(255, 0, 0).value,
+				timestamp = os.date('!%Y-%m-%dT%H:%M:%S'),
+ 	 		}
+		}
+		if not embedmessage then noembedmsg = message.channel:sendMessage(luacode("pong")) end
+		if not embedmessage then noembedmsg.content = luacode("🏓 Pong!"..string.format(" - time taken: %.2fs", os.clock() - x)) end
+		if embedmessage then embedmessage.embed = {
+				title = "🏓 Pong!",
+				description = string.format("time taken: %.2fs", os.clock() - x),
+				color = ccolor,
+				timestamp = os.date('!%Y-%m-%dT%H:%M:%S'),
+				footer = {text = message.author.name..""}
+		} 
+		end
 	elseif arguments[1] == 'h>credit' then
 		message.channel:send {
 									  embed = {
 										title = "Thank you to these many people.",
-										description = "Your contributions to the bot have not gone unnoticed.\nToxiPlays#9278 - Bot Owner\nBright Lightning#6416 (and #9532) - Bot Developer",
+										description = "Your contributions to the bot have not gone unnoticed.\nToxiPlays#9278 - Bot Owner\nBright Lightning#6416 (and #9532) - Bot Developer\n[FuZion] Sexy Cow#0018 - Buffed h>help",
 										color = discordia.Color.fromRGB(0, 255, 0).value,
 										timestamp = discordia.Date():toISO('T', 'Z')
 									  }
@@ -60,7 +84,7 @@ function CheckForCommands(message, arguments)
 			message.channel:send {
 									  embed = {
 										title = level["Name"],
-										description = "**Created by**: "..level["Creator"].."\n**Chance of Beating**: "..level["Difficulty"].."%\nBeating this level will give you **"..level["Stars"].."** stars!",
+										description = "**Created by**: "..level["Creator"].."\n**Chance of Losing**: "..tostring(level["Difficulty"]).."%\nBeating this level will give you **"..level["Stars"].."** stars!",
 										color = discordia.Color.fromRGB(255, 255, 0).value,
 										footer = {
 											text = "Created on "
@@ -245,10 +269,9 @@ client:on('ready', function()
 	-- client.user is the path for your bot
 	print('Logged in as '.. client.user.username)
 	client:setGame{
-		["name"] = tostring(#client.guilds..' servers | h>help'),
+		["name"] = tostring(#client.guilds..' servers | h>help'), 
 		["type"] = 2
 	}
 end)
-
 
 client:run('Bot TOKEN')
