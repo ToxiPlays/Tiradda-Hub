@@ -60,7 +60,7 @@ function CheckForCommands(message, arguments)
 		}
 		if not embedmessage then noembedmsg = message.channel:sendMessage(luacode("pong")) end
 		if not embedmessage then noembedmsg.content = luacode("🏓 Pong!"..string.format(" - time taken: %.2fs", os.clock() - x)) end
-		if embedmessage then embedmessage.embed = {
+		if embedmessage then embedmessage:setEmbed {
 				title = "🏓 Pong!",
 				description = string.format("time taken: %.2fs", os.clock() - x),
 				color = ccolor,
