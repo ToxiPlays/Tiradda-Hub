@@ -29,13 +29,14 @@ local difficulties = {
 }
 local PublicLevels = {}
 local CreatorLevels = {}
+local UserStars = {}
 
 function fetchUserID(user)
 	-- This works by noticing that by mentioning someone, you send "<@USER ID>" into a Discord channel.
 	-- This function simply cuts off the <@ and > part of the mention to give you the User ID of the Discord user.
 	local mentionString = user.mentionString
 	local ID = string.sub(mentionString,3,string.len(mentionString)-1)
-	
+
 	if ID then
 		return ID
 	else
@@ -43,12 +44,30 @@ function fetchUserID(user)
 	end
 end
 
+function GiveStars(userID, amount, message)
+	if amount == 0 then
+		message.channel:send("This level is unrated. You have not recieved any stars for beating it.")
+		return
+	end
+	checkforEntry = UserStars[userID]
+	if checkforEntry == nil then
+		UserStars[#UserStars+1] = {
+			["UserID"] = userID,
+			["Stars"] = 0
+		}
+		checkforEntry = UserStars[#UserStars]
+	end
+	local newStars = checkforEntry["Stars"] + amount
+	checkforEntry["Stars"] = newStars
+	message.channel:send("Congrats <@"..userID..">! You now have **"..newStars.."⭐** in total!")
+end
+
 function CheckForCommands(message, arguments)
 	if arguments[1] == 'h>ping' then -- help command buffed by [FuZion] Sexy Cow#0018
 		local x = os.clock()
 		local s = 0
-		for i=1,100000 do 
-			s = s + i 
+		for i=1,100000 do
+			s = s + i
 		end
 		local ccolor = discordia.Color(math.random(255), math.random(255), math.random(255)).value
 		local embedmessage = message.channel:send{
@@ -59,14 +78,42 @@ function CheckForCommands(message, arguments)
  	 		}
 		}
 		if not embedmessage then noembedmsg = message.channel:sendMessage(luacode("pong")) end
-		if not embedmessage then noembedmsg.content = luacode("🏓 Pong!"..string.format(" - time taken: %.2fs", os.clock() - x)) end
+		if not embedmessage then noembedmsg:setContent(luacode("🏓 Pong!"..string.format(" - time taken: %.2fs", os.clock() - x))) end
 		if embedmessage then embedmessage:setEmbed {
 				title = "🏓 Pong!",
 				description = string.format("time taken: %.2fs", os.clock() - x),
 				color = ccolor,
 				timestamp = os.date('!%Y-%m-%dT%H:%M:%S'),
 				footer = {text = message.author.name..""}
-		} 
+		}
+		end
+	elseif arguments[1] == 'h>play' then
+		local level = PublicLevels[tonumber(arguments[2])]
+		if level then
+			local number = math.random(1,100)
+			local chance = level["Difficulty"]
+			if number > chance then
+					message.channel:send {
+									  embed = {
+										title = "BOOOM!!",
+										description = "You completed "..level["Creator"].."'s level, "..level["Name"]..". Because of this, you now have earned **"..level["Stars"].."⭐**!",
+										color = discordia.Color.fromRGB(0, 255, 0).value,
+										timestamp = discordia.Date():toISO('T', 'Z')
+									  }
+									}
+					GiveStars(tostring(fetchUserID(message.author)), level["Stars"], message)
+			else
+				message.channel:send {
+									  embed = {
+										title = "Death",
+										description = "You attempted to complete "..level["Creator"].."'s level, "..level["Name"]..", but died in the process. Maybe next time!",
+										color = discordia.Color.fromRGB(255, 0, 0).value,
+										timestamp = discordia.Date():toISO('T', 'Z')
+									  }
+									}
+			end
+		else
+			message.channel:send("You sent an invaild ID. Try using `h>search` to check if this ID exists.")
 		end
 	elseif arguments[1] == 'h>credit' then
 		message.channel:send {
@@ -101,6 +148,55 @@ function CheckForCommands(message, arguments)
 										  {name = "Fix", value = "Make sure that the level is uploaded, and that you typed the right ID (PublicLevelID, not LevelID)", inline = true},
 										},
 										color = discordia.Color.fromRGB(255, 0, 0).value,
+										timestamp = discordia.Date():toISO('T', 'Z')
+									  }
+									}
+		end
+	elseif arguments[1] == 'h>rate' then
+		local allowedToRun = admins[tostring(fetchUserID(message.author))]
+		if allowedToRun then
+			level = PublicLevels[tonumber(arguments[2])]
+			if level then
+				local oldStars = level["Stars"]
+				level["Stars"] = tonumber(arguments[3])
+				
+				if oldStars == 0 then
+					message.channel:send("Successfully rated "..level["Name"].." as a **"..arguments[3].."⭐**!")
+				else
+					message.channel:send("Successfully changed "..level["Name"].."'s rating from a **"..oldStars.."⭐** to a **"..arguments[3].."⭐**!")
+				end
+			else
+				message.channel:send("You sent an invaild ID. Try using `h>search` to check if this ID exists.")
+			end
+		else
+			message.channel:send('Only bot developers are allowed to run this command!')
+		end
+	elseif arguments[1] == 'h>stars' then
+		status = "<error resolving user>"
+		if arguments[2] == nil then
+			user = fetchUserID(message.author)
+			status = "Your"
+		else
+			local user = string.sub(arguments[2],3,string.len(arguments[2])-1)
+			status = arguments[2].."'s"
+		end
+		local temp = UserStars[user]
+		if temp == nil then
+			message.channel:send {
+									  embed = {
+										title = status.." stars",
+										description = "**0⭐**!",
+										color = discordia.Color.fromRGB(0, 255, 0).value,
+										timestamp = discordia.Date():toISO('T', 'Z')
+									  }
+									}
+		else
+			local stars = tostring(temp[Stars])
+			message.channel:send {
+									  embed = {
+										title = status.." stars",
+										description = "**"..stars.."⭐**!",
+										color = discordia.Color.fromRGB(0, 255, 0).value,
 										timestamp = discordia.Date():toISO('T', 'Z')
 									  }
 									}
@@ -219,10 +315,26 @@ function CheckForCommands(message, arguments)
 	elseif arguments[1] == 'h>upload' then
 		level = CreatorLevels[tonumber(arguments[2])]
 		if level then
+			if level["Status"] == "Pending" then
+				message.channel:send {
+									  embed = {
+										title = "Error",
+										fields = {
+										  {name = "What Happened?", value = "Level is not Verified", inline = true},
+										  {name = "Fix", value = "Beat this level (via h>verify) and then try to upload it!", inline = true},
+										},
+										color = discordia.Color.fromRGB(255, 0, 0).value,
+										timestamp = discordia.Date():toISO('T', 'Z')
+									  }
+									}
+				return
+			end
 			local name = ""
 			for i=1,#arguments do
 				if i ~= 1 then
 					if i ~= 2 then
+						name = name..arguments[i].." "
+						name = name..arguments[i].." "
 						name = name..arguments[i].." "
 					end
 				end
@@ -237,13 +349,17 @@ function CheckForCommands(message, arguments)
 									}
 			PublicLevels[#PublicLevels+1] = {
 				["Creator"] = message.author.username,
-				["Name"] = name,
+				["Name"] = string.sub(name,1,string.len(name)-1),
 				["Difficulty"] = level["Difficulty"],
 				["Stars"] = 0,
 				["Timestamp"] = discordia.Date():toISO('T', 'Z')
 			}
-			
+
 			table.remove(CreatorLevels,tonumber(arguments[2]))
+			client:setGame{
+				["name"] = tostring(#PublicLevels..' levels | h>help'),
+				["type"] = 2
+			}
 		else
 			message.channel:send('You gave an invaild ID.')
 		end
@@ -255,11 +371,11 @@ client:on('messageCreate', function(message)
 	for i in string.gmatch(message.content, "%S+") do
 	   arguments[#arguments+1] = i
 	end
-	
+
 	-- argument 1 = "h>"command-name
 	-- argument 2 and beyond - actual arguments
-	
-	
+
+
 	if message.author.bot == false then
 		CheckForCommands(message, arguments)
 	end
@@ -269,7 +385,7 @@ client:on('ready', function()
 	-- client.user is the path for your bot
 	print('Logged in as '.. client.user.username)
 	client:setGame{
-		["name"] = tostring(#client.guilds..' servers | h>help'), 
+		["name"] = tostring(#PublicLevels..' levels | h>help'),
 		["type"] = 2
 	}
 end)
