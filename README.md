@@ -1,12 +1,12 @@
-[code]: https://github.com/CryfryDoesGaming/Tiradda-Hub
-[issue]: https://github.com/CryfryDoesGaming/Tiradda-Hub/issues
-[pr]: https://github.com/CryfryDoesGaming/Tiradda-Hub/pulls
-[wiki]: https://github.com/CryfryDoesGaming/Tiradda-Hub/wiki
+[code]: https://github.com/ToxiPlays/Tiradda-Hub
+[issue]: https://github.com/ToxiPlays/Tiradda-Hub/issues
+[pr]: https://github.com/ToxiPlays/Tiradda-Hub/pulls
+[wiki]: https://github.com/ToxiPlays/Tiradda-Hub/wiki
 [discordia-install]: https://github.com/SinisterRectus/Discordia/wiki/Installing-Discordia
-[diff]: https://github.com/CryfryDoesGaming/Tiradda-Hub/wiki/Difficulties
+[diff]: https://github.com/ToxiPlays/Tiradda-Hub/wiki/Difficulties
 
 # Tiradda's Hub
-![](https://img.shields.io/github/issues/CryfryDoesGaming/Tiradda-Hub.svg) ![](https://img.shields.io/github/forks/CryfryDoesGaming/Tiradda-Hub.svg) ![](https://img.shields.io/github/stars/CryfryDoesGaming/Tiradda-Hub.svg) ![](https://img.shields.io/github/license/CryfryDoesGaming/Tiradda-Hub.svg) ![](https://img.shields.io/badge/Made%20with-Lua-1f425f.svg) [![GitHub release](https://img.shields.io/github/release/CryfryDoesGaming/Tiradda-Hub.svg)](https://GitHub.com/CryfryDoesGaming/Tiradda-Hub/releases/)\
+![](https://img.shields.io/github/issues/ToxiPlays/Tiradda-Hub.svg) ![](https://img.shields.io/github/forks/ToxiPlays/Tiradda-Hub.svg) ![](https://img.shields.io/github/stars/ToxiPlays/Tiradda-Hub.svg) ![](https://img.shields.io/github/license/ToxiPlays/Tiradda-Hub.svg) ![](https://img.shields.io/badge/Made%20with-Lua-1f425f.svg) [![GitHub release](https://img.shields.io/github/release/ToxiPlays/Tiradda-Hub.svg)](https://GitHub.com/ToxiPlays/Tiradda-Hub/releases/)\
 **Tiradda's Hub** is a game bot that will instantly set up upon inviting it to a Discord server.
 
 ## Hotlinks
