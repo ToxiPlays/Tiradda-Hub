@@ -8,7 +8,8 @@ local admins = {
 	["259935350653321216"] = true,
 	["312435711192334336"] = true,
 	["368595168523321346"] = true,
-	["521025553562730506"] = true
+	["521025553562730506"] = true,
+	["482926980564779009"] = true
 }
 
 local HelpMessage = [[
@@ -45,11 +46,17 @@ function fetchUserID(user)
 end
 
 function GiveStars(userID, amount, message)
+	local checkforEntry = nil
 	if amount == 0 then
 		message.channel:send("This level is unrated. You have not recieved any stars for beating it.")
 		return
 	end
-	checkforEntry = UserStars[userID]
+	for i=1, #UserStars do
+		local temp = UserStars[i]
+		if temp["UserID"] == userID then
+			checkforEntry = temp
+		end
+	end
 	if checkforEntry == nil then
 		UserStars[#UserStars+1] = {
 			["UserID"] = userID,
@@ -173,6 +180,7 @@ function CheckForCommands(message, arguments)
 		end
 	elseif arguments[1] == 'h>stars' then
 		status = "<error resolving user>"
+		local checkforEntry = nil
 		if arguments[2] == nil then
 			user = fetchUserID(message.author)
 			status = "Your"
@@ -180,8 +188,13 @@ function CheckForCommands(message, arguments)
 			local user = string.sub(arguments[2],3,string.len(arguments[2])-1)
 			status = arguments[2].."'s"
 		end
-		local temp = UserStars[user]
-		if temp == nil then
+		for i=1, #UserStars do
+			temp = UserStars[i]
+			if temp["UserID"] == fetchUserID(message.author) then
+				checkforEntry = temp
+			end
+		end
+		if checkforEntry == nil then
 			message.channel:send {
 									  embed = {
 										title = status.." stars",
@@ -191,7 +204,7 @@ function CheckForCommands(message, arguments)
 									  }
 									}
 		else
-			local stars = tostring(temp[Stars])
+			local stars = tostring(temp["Stars"])
 			message.channel:send {
 									  embed = {
 										title = status.." stars",
@@ -333,8 +346,6 @@ function CheckForCommands(message, arguments)
 			for i=1,#arguments do
 				if i ~= 1 then
 					if i ~= 2 then
-						name = name..arguments[i].." "
-						name = name..arguments[i].." "
 						name = name..arguments[i].." "
 					end
 				end
