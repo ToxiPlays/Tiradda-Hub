@@ -1,8 +1,27 @@
+--client.guilds:get(serverID):getChannel(channelID)
 pcall(os.remove, 'discordia.log')
 pcall(os.remove, 'gateway.json')
 local discordia = require('discordia')
 local client = discordia.Client()
 local enums = discordia.enums
+local sandbox = setmetatable({ }, { __index = _G })
+function printLine(...)
+    local ret = {}
+    for i = 1, select('#', ...) do
+        local arg = tostring(select(i, ...))
+        table.insert(ret, arg)
+    end
+    return table.concat(ret, '\t')
+end
+local pp = require('pretty-print')
+function prettyLine(...)
+    local ret = {}
+    for i = 1, select('#', ...) do
+        local arg = pp.strip(pp.dump(select(i, ...)))
+        table.insert(ret, arg)
+    end
+    return table.concat(ret, '\t')
+end
 
 local admins = {
 	["259935350653321216"] = true,
@@ -69,6 +88,42 @@ function GiveStars(userID, amount, message)
 	message.channel:send("Congrats <@"..userID..">! You now have **"..newStars.."⭐** in total!")
 end
 
+
+function exec(arg, msg)
+	local function code(str)
+		return string.format('```lua\n%s\n```', str)
+	end
+	
+    if not arg then return end
+    if msg.author ~= msg.client.owner then return end
+    arg = arg:gsub('```\n?', '') -- strip markdown codeblocks
+    local unnamedTable = {}
+    sandbox.message = msg
+    sandbox.print = function(...)
+        table.insert(unnamedTable, printLine(...))
+    end
+    sandbox.p = function(...)
+        table.insert(unnamedTable, prettyLine(...))
+    end
+    local fn, syntaxError = load(arg, 'DiscordBot', 't', sandbox)
+    if not fn then return msg:reply(code(syntaxError)) end
+    local success, runtimeError = pcall(fn)
+    if not success then return msg:reply(code(runtimeError)) end
+    unnamedTable = table.concat(unnamedTable, '\n')
+    if #unnamedTable > 1990 then -- truncate long messages
+        unnamedTable = unnamedTable:sub(1, 1990)
+    end
+    return msg:reply(code(unnamedTable))
+end
+
+function ChangeDescription(ID, desc, message)
+	local level = PublicLevels[ID]
+	if level then else message.channel:send("Error when looking up ID ".. tostring(ID)..". Cancelling description change.") return end
+	
+	level["Description"] = desc
+	message.channel:send("Successfully changed "..level["Name"].."'s description!")
+end
+
 function CheckForCommands(message, arguments)
 	if arguments[1] == 'h>ping' then -- help command buffed by [FuZion] Sexy Cow#0018
 		local x = os.clock()
@@ -94,6 +149,54 @@ function CheckForCommands(message, arguments)
 				footer = {text = message.author.name..""}
 		}
 		end
+	elseif arguments[1] == 'h>desc' then
+		local desc = ""
+		for i=1,#arguments do
+			if i ~= 1 then
+				if i~= 2 then
+					desc = desc..arguments[i].." "
+				end
+			end
+		end
+		if (desc == " " or desc == "") then
+			desc = "This level does not have a description."
+		end
+		local level = PublicLevels[tonumber(arguments[2])]
+		if level then
+			local authorized = false
+			if level["Creator"] == message.author.username then
+				authorized = true
+			end
+			local allowedToRun = admins[tostring(fetchUserID(message.author))]
+			if allowedToRun then
+				authorized = true
+			end
+			if authorized then
+				ChangeDescription(tonumber(arguments[2]), desc, message)
+			else
+				message.channel:send {
+									  embed = {
+										title = "Error",
+										fields = {
+										  {name = "What Happened?", value = "You don't own this level, and are not a bot admin.", inline = true},
+										  {name = "Fix", value = "Double-check that you typed the correct ID.", inline = true},
+										},
+										color = discordia.Color.fromRGB(255, 0, 0).value,
+										timestamp = discordia.Date():toISO('T', 'Z')
+									  }
+									}
+			end
+		else
+			message.channel:send("You sent an invaild ID. Try using `h>search` to check if this ID exists.")
+		end
+	elseif arguments[1] == 'h>eval' then
+		local name = ""
+		for i=1,#arguments do
+			if i ~= 1 then
+				name = name..arguments[i].." "
+			end
+		end
+		exec(name, message)
 	elseif arguments[1] == 'h>play' then
 		local level = PublicLevels[tonumber(arguments[2])]
 		if level then
@@ -122,6 +225,8 @@ function CheckForCommands(message, arguments)
 		else
 			message.channel:send("You sent an invaild ID. Try using `h>search` to check if this ID exists.")
 		end
+	elseif arguments[1] == 'h>setup' then
+		message.channel:send(":white_check_mark: This bot is already set up in this Discord server, "..message.author.mentionString.."!")
 	elseif arguments[1] == 'h>credit' then
 		message.channel:send {
 									  embed = {
@@ -138,7 +243,7 @@ function CheckForCommands(message, arguments)
 			message.channel:send {
 									  embed = {
 										title = level["Name"],
-										description = "**Created by**: "..level["Creator"].."\n**Chance of Losing**: "..tostring(level["Difficulty"]).."%\nBeating this level will give you **"..level["Stars"].."** stars!",
+										description = "**Created by**: "..level["Creator"].."\n**Chance of Losing**: "..tostring(level["Difficulty"]).."%\n------------\n"..level["Description"].."\n------------\nBeating this level will give you **"..level["Stars"].."** stars!",
 										color = discordia.Color.fromRGB(255, 255, 0).value,
 										footer = {
 											text = "Created on "
@@ -363,14 +468,16 @@ function CheckForCommands(message, arguments)
 				["Name"] = string.sub(name,1,string.len(name)-1),
 				["Difficulty"] = level["Difficulty"],
 				["Stars"] = 0,
+				["Description"] = "This level does not have a description.",
 				["Timestamp"] = discordia.Date():toISO('T', 'Z')
 			}
-
 			table.remove(CreatorLevels,tonumber(arguments[2]))
 			client:setGame{
 				["name"] = tostring(#PublicLevels..' levels | h>help'),
 				["type"] = 2
 			}
+			local channel = client.guilds:get("534252018303369226"):getChannel("561407500939821066")
+			channel:send("**A new level was created by "..message.author.username.."!**\n`Name`: "..string.sub(name,1,string.len(name)-1).."\n`Chance of Failure`: "..level["Difficulty"].."%\n`Play Now`: h>play "..#PublicLevels)
 		else
 			message.channel:send('You gave an invaild ID.')
 		end
