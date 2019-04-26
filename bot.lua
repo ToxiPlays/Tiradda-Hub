@@ -67,7 +67,7 @@ end
 function GiveStars(userID, amount, message)
 	local checkforEntry = nil
 	if amount == 0 then
-		message.channel:send("This level is unrated. You have not recieved any stars for beating it.")
+		message.channel:send("This level is unrated. You have not received any stars for beating it.")
 		return
 	end
 	for i=1, #UserStars do
@@ -94,34 +94,46 @@ function exec(arg, msg)
 		return string.format('```lua\n%s\n```', str)
 	end
 	
-    if not arg then return end
-    if msg.author ~= msg.client.owner then return end
-    arg = arg:gsub('```\n?', '') -- strip markdown codeblocks
-    local unnamedTable = {}
-    sandbox.message = msg
-    sandbox.print = function(...)
-        table.insert(unnamedTable, printLine(...))
-    end
-    sandbox.p = function(...)
-        table.insert(unnamedTable, prettyLine(...))
-    end
-    local fn, syntaxError = load(arg, 'DiscordBot', 't', sandbox)
-    if not fn then return msg:reply(code(syntaxError)) end
-    local success, runtimeError = pcall(fn)
-    if not success then return msg:reply(code(runtimeError)) end
-    unnamedTable = table.concat(unnamedTable, '\n')
-    if #unnamedTable > 1990 then -- truncate long messages
-        unnamedTable = unnamedTable:sub(1, 1990)
-    end
-    return msg:reply(code(unnamedTable))
+	if not arg then return end
+	if msg.author ~= msg.client.owner then return end
+	
+	arg = arg:gsub('```\n?', '') -- strip markdown codeblocks
+	local unnamedTable = {}
+	sandbox.message = msg
+	sandbox.print = function(...)
+		table.insert(unnamedTable, printLine(...))
+	end
+	sandbox.p = function(...)
+		table.insert(unnamedTable, prettyLine(...))
+	end
+	sandbox.client = client
+	sandbox.enums = enums
+	sandbox.PublicLevels = PublicLevels
+	sandbox.CreatorLevels = CreatorLevels
+	sandbox.UserStars = UserStars
+	sandbox.restart = function()
+		msg.channel:send("```lua\n[string \"DiscordBot\"]:1: Restarting bot...```")
+		os.execute("luvit bot.lua")
+	end
+	local fn, syntaxError = load(arg, 'DiscordBot', 't', sandbox)
+	if not fn then return msg:reply(code(syntaxError)) end
+	local success, runtimeError = pcall(fn)
+	if not success then return msg:reply(code(runtimeError)) end
+	unnamedTable = table.concat(unnamedTable, '\n')
+	if #unnamedTable > 1990 then -- truncate long messages
+		unnamedTable = unnamedTable:sub(1, 1990)
+	end
+	return msg:reply(code(unnamedTable))
 end
 
 function ChangeDescription(ID, desc, message)
 	local level = PublicLevels[ID]
-	if level then else message.channel:send("Error when looking up ID ".. tostring(ID)..". Cancelling description change.") return end
+	if level then else message.channel:send("Error when looking up ID ".. tostring(ID)..". Canceling description change.") return end
 	
 	level["Description"] = desc
 	message.channel:send("Successfully changed "..level["Name"].."'s description!")
+	local channel = client.guilds:get("534252018303369226"):getChannel("561407500939821066")
+	channel:send("**<:levelCreated:561742421692776448> "..message.author.username.." added a description to a level!**\n`Description`: ```"..desc.."````Play Now`: h>play "..ID)
 end
 
 function CheckForCommands(message, arguments)
@@ -187,7 +199,7 @@ function CheckForCommands(message, arguments)
 									}
 			end
 		else
-			message.channel:send("You sent an invaild ID. Try using `h>search` to check if this ID exists.")
+			message.channel:send("You sent an invalid ID. Try using `h>search` to check if this ID exists.")
 		end
 	elseif arguments[1] == 'h>eval' then
 		local name = ""
@@ -223,7 +235,7 @@ function CheckForCommands(message, arguments)
 									}
 			end
 		else
-			message.channel:send("You sent an invaild ID. Try using `h>search` to check if this ID exists.")
+			message.channel:send("You sent an invalid ID. Try using `h>search` to check if this ID exists.")
 		end
 	elseif arguments[1] == 'h>setup' then
 		message.channel:send(":white_check_mark: This bot is already set up in this Discord server, "..message.author.mentionString.."!")
@@ -274,11 +286,15 @@ function CheckForCommands(message, arguments)
 				
 				if oldStars == 0 then
 					message.channel:send("Successfully rated "..level["Name"].." as a **"..arguments[3].."⭐**!")
+					local channel = client.guilds:get("534252018303369226"):getChannel("561948119831674886")
+					channel:send("<:levelCreated:561742421692776448> **"..level["Creator"].."'s level was rated by "..message.author.username.."! **\n`Name`: "..level["Name"].."\n`Chance of Failure`: "..level["Difficulty"].."%\n`Play Now`: h>play "..arguments[2].."\n`Stars`: "..arguments[3])
 				else
 					message.channel:send("Successfully changed "..level["Name"].."'s rating from a **"..oldStars.."⭐** to a **"..arguments[3].."⭐**!")
+					local channel = client.guilds:get("534252018303369226"):getChannel("561948119831674886")
+					channel:send("<:levelCreated:561742421692776448> **"..level["Creator"].."'s level's rating was changed by "..message.author.username.."! **\n`Name`: "..string.sub(name,1,string.len(name)-1).."\n`Chance of Failure`: "..level["Difficulty"].."%\n`Play Now`: h>play "..arguments[2].."\n`Stars`: "..arguments[3])
 				end
 			else
-				message.channel:send("You sent an invaild ID. Try using `h>search` to check if this ID exists.")
+				message.channel:send("You sent an invalid ID. Try using `h>search` to check if this ID exists.")
 			end
 		else
 			message.channel:send('Only bot developers are allowed to run this command!')
@@ -342,8 +358,7 @@ function CheckForCommands(message, arguments)
 			message.channel:send('Only bot developers are allowed to run this command!')
 		end
 	elseif arguments[1] == 'h>help' then
-		message.channel:send('I\'ve been informed you have mail, **'..message.author.username..'**.')
-		message.author:send(HelpMessage)
+		message.channel:send('Sorry, '..message.author.username..'. This command is **disabled** because of technical difficulties with the https://toxiplays.github.io website. A bot developer may help you with using this bot. Take care!')
 	elseif arguments[1] == 'h>invite' then
 		message.channel:send('I\'ve been informed you have mail, **'..message.author.username..'**.')
 		message.author:send('Someone on your account has asked for a link to add Tiradda\'s Hub to your server. Here it is.')
@@ -477,12 +492,25 @@ function CheckForCommands(message, arguments)
 				["type"] = 2
 			}
 			local channel = client.guilds:get("534252018303369226"):getChannel("561407500939821066")
-			channel:send("**A new level was created by "..message.author.username.."!**\n`Name`: "..string.sub(name,1,string.len(name)-1).."\n`Chance of Failure`: "..level["Difficulty"].."%\n`Play Now`: h>play "..#PublicLevels)
+			channel:send("<:levelCreated:561742421692776448> **A new level was created by "..message.author.username.."!**\n`Name`: "..string.sub(name,1,string.len(name)-1).."\n`Chance of Failure`: "..level["Difficulty"].."%\n`Play Now`: h>play "..#PublicLevels)
 		else
 			message.channel:send('You gave an invaild ID.')
 		end
+		elseif arguments[1] == 'h>export' then
+			if #PublicLevels == 0 then
+				message.channel:send{file = {"levels.lua", "h>eval PublicLevels = {}"}}
+				return
+			end
+			local un = "{"
+			for i=1, #PublicLevels do
+				local level = PublicLevels[i]
+				un = un.."{[\"Creator\"] = \""..level["Creator"].."\",\n[\"Name\"] = \""..level["Name"].."\",\n[\"Difficulty\"] = "..level["Difficulty"]..", [\"Stars\"] = "..level["Stars"]..",\n[\"Description\"] = \""..level["Description"].."\", \n[\"Timestamp\"] = discordia.Date():toISO('T', 'Z')}, client:setGame{ [\"name\"] = tostring(#PublicLevels..' levels | h>help'), [\"type\"] = 2 }"
+			end
+			un = string.sub(un,1,string.len(un)-1)
+			un = un.."}"
+			message.channel:send{file = {"levels.lua", "h>eval PublicLevels = {"..un.."} client:setGame{ [\"name\"] = tostring(#PublicLevels..' levels | h>help'), [\"type\"] = 2 }"}}
+		end
 	end
-end
 
 client:on('messageCreate', function(message)
 	local arguments = {}
