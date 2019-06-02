@@ -358,6 +358,8 @@ function CheckForCommands(message, arguments)
 			message.channel:send('Only bot developers are allowed to run this command!')
 		end
 	elseif arguments[1] == 'h>help' then
+		--message.channel:send('I\'ve been informed you have mail, **'..message.author.username..'**.')
+		--message.author:send(HelpMessage)
 		message.channel:send('Sorry, '..message.author.username..'. This command is **disabled** because of technical difficulties with the https://toxiplays.github.io website. A bot developer may help you with using this bot. Take care!')
 	elseif arguments[1] == 'h>invite' then
 		message.channel:send('I\'ve been informed you have mail, **'..message.author.username..'**.')
